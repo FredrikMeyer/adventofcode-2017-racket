@@ -7,7 +7,6 @@
   (append (map char->integer (string->list str)) (list 17 31 73 47 23))
   )
 
-
 (define (reverse-vec vec from length)
   (let (
         (vec-copy (vector-copy vec))
@@ -34,10 +33,7 @@
          (c-copy (vector-copy circle))
          (reversed (reverse-vec c-copy current-pos length))
          )
-      (block
-       ;(display (list reversed (modulo (+ current-pos length skip-size) len) (+ skip-size 1)))
        (list reversed (modulo (+ current-pos length skip-size) len) (+ skip-size 1))
-       )
       )
     )
   )
@@ -57,7 +53,7 @@
              (current-pos (second res))
              (skip-size (third res))
              )
-        (process-n-times (process-lengths res lengths) lengths (- n 1))
+        (process-n-times res lengths (- n 1))
         )
       )
   )
@@ -74,7 +70,12 @@
   )
 
 (define (dense-hash->hexstring seq)
-  (apply string-append (map (lambda (n) (number->string n 16)) seq))
+  (define (number->string2 n)
+    (if (< n 16) (string-append "0" (number->string n 16))
+        (number->string n 16)
+        )
+    )
+  (apply string-append (map number->string2 seq))
   )
 
 (define (make-hash inp-str)
