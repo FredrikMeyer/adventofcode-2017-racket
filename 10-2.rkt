@@ -1,6 +1,12 @@
 #lang racket
 (require racket/block)
 
+(define inp "206,63,255,131,65,80,238,157,254,24,133,2,16,0,1,3")
+
+(define (str->lengths str)
+  (append (map char->integer (string->list str)) (list 17 31 73 47 23))
+  )
+
 
 (define (reverse-vec vec from length)
   (let (
@@ -42,15 +48,39 @@
       )
   )
 
-
-(define (product-of-first-two-terms w)
-  (* (vector-ref w 0) (vector-ref w 1))
+(define (process-n-times start lengths n)
+  (if (= n 0)
+      start
+      (let* (
+             (res (process-lengths start lengths))
+             (circle (first res))
+             (current-pos (second res))
+             (skip-size (third res))
+             )
+        (process-n-times (process-lengths res lengths) lengths (- n 1))
+        )
+      )
   )
 
-(define v (list->vector (range 0 256)))
-(define lengths (list 206 63 255 131 65 80 238 157 254 24 133 2 16 0 1 3))
-(define vv (list->vector (range 0 5)))
-(define tlengths (list 3 4 1 5))
+(define (xor-vec vec)
+  (apply bitwise-xor (vector->list vec))
+  )
+  
 
-(define result (process-lengths (list v 0 0) lengths))
-(define answer (product-of-first-two-terms (car result)))
+(define (sparse->dense-hash w)
+  (if (= (vector-length w) 0) '()
+      (cons (xor-vec (vector-copy w 0 16)) (sparse->dense-hash (vector-drop w 16)))
+      )
+  )
+
+(define (dense-hash->hexstring seq)
+  (apply string-append (map (lambda (n) (number->string n 16)) seq))
+  )
+
+(define (make-hash inp-str)
+  (let (
+        (sparse-hash (car (process-n-times (list (list->vector (range 0 256)) 0 0) (str->lengths inp-str) 64)))
+        )
+    (dense-hash->hexstring (sparse->dense-hash sparse-hash))
+    )
+  )
