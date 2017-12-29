@@ -48,6 +48,12 @@
   (string-split (string-trim (file->string filename)) ",")
   )
 
-(number-of-steps 0 (apply + (map dir->cplx (list "se" "sw" "se" "sw" "sw"))))
-;; Answer
-;(number-of-steps 0 (apply + (map dir->cplx (file->commands "input11.txt"))))
+;(number-of-steps 0 (apply + (map dir->cplx (list "se" "sw" "se" "sw" "sw"))))
+
+(define (compute-max-dist l)
+  (let (
+        (len (length l))
+        )
+    (apply max (map (lambda (n) (number-of-steps 0 (apply + (map dir->cplx (take l n)))))
+         (range 1 (length l))))
+    ))
